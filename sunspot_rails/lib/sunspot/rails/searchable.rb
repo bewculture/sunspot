@@ -228,7 +228,7 @@ module Sunspot #:nodoc:
                 records = where( :_id.gt => last_id).order_by([[:id, :asc]]).limit(options[:batch_size])
                 puts "Indexing the records: #{records.to_s}"
                 Sunspot.index(records)
-                last_id = records.last.id
+                last_id = records.last._id
               end
               Sunspot.commit if options[:batch_commit]
               offset += options[:batch_size]
