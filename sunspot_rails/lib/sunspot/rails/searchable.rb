@@ -215,7 +215,7 @@ module Sunspot #:nodoc:
         #   Post.index(:include => :author) 
         #
         def solr_index(opts={})
-          options = { :batch_size => 500, :batch_commit => true, :include => self.sunspot_options[:include], :first_id => 0}.merge(opts)
+          options = { :batch_size => 500, :batch_commit => true, :include => self.sunspot_options[:include], :first_id => nil}.merge(opts)
           unless options[:batch_size]
             Sunspot.index!(all())
           else
@@ -225,7 +225,8 @@ module Sunspot #:nodoc:
             last_id = options[:first_id]
             while(offset < record_count)
               solr_benchmark options[:batch_size], counter do
-                records = where( :_id.gt => last_id).order_by([[:_id, :asc]]).limit(options[:batch_size]).to_ary
+                records = all() if last_id.nil? else where( :_id.gt => last_id)
+                records = records.order_by([[:_id, :asc]]).limit(options[:batch_size]).to_ary
                 puts "Indexing the #{records.size} records: #{records.inspect}"
                 Sunspot.index(records)
                 last_id = records.last._id
