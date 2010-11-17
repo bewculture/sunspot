@@ -39,11 +39,6 @@ module Sunspot #:nodoc:
         # :ignore_attribute_changes_of<Array>::
         #   Define attributes, that should not trigger a reindex of that
         #   object. Usual suspects are updated_at or counters.
-        # :include<Mixed>::
-        #   Define default ActiveRecord includes, set this to allow ActiveRecord
-        #   to load required associations when indexing. See ActiveRecord's 
-        #   documentation on eager-loading for examples on how to set this
-        #   Default: [] 
         #
         # ==== Example
         #
@@ -61,9 +56,7 @@ module Sunspot #:nodoc:
         def searchable(options = {}, &block)
           Sunspot.setup(self, &block)
 
-          if searchable?
-            sunspot_options[:include].concat(Util::Array(options[:include]))
-          else
+          unless searchable?
             extend ClassMethods
             include InstanceMethods
 
@@ -79,7 +72,6 @@ module Sunspot #:nodoc:
                 searchable.remove_from_index
               end
             end
-            options[:include] = Util::Array(options[:include])
             
             self.sunspot_options = options
           end
@@ -225,7 +217,7 @@ module Sunspot #:nodoc:
         def solr_index(opts={})
           options = { :batch_size => 500, :batch_commit => true, :include => self.sunspot_options[:include], :first_id => 0}.merge(opts)
           unless options[:batch_size]
-            Sunspot.index!(all(:include => options[:include]))
+            Sunspot.index!(all())
           else
             offset = 0
             counter = 1
@@ -233,7 +225,7 @@ module Sunspot #:nodoc:
             last_id = options[:first_id]
             while(offset < record_count)
               solr_benchmark options[:batch_size], counter do
-                records = all(:include => options[:include], :conditions => ["#{table_name}.#{primary_key} > ?", last_id], :limit => options[:batch_size], :order => "#{table_name}.#{primary_key}")
+                records = where( :_id.gt => last_id).limit(options[:batch_size]).order_by(:id.asc)
                 Sunspot.index(records)
                 last_id = records.last.id
               end
