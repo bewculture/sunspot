@@ -225,7 +225,7 @@ module Sunspot #:nodoc:
             last_id = options[:first_id]
             while(offset < record_count)
               solr_benchmark options[:batch_size], counter do
-                records = where( :_id.gt => last_id).limit(options[:batch_size]).ascending(:id)
+                records = where( :_id.gt => last_id).ascending(:id).limit(options[:batch_size])
                 puts "Indexing the records: #{records.to_s}"
                 Sunspot.index(records)
                 last_id = records.last.id
