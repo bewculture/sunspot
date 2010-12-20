@@ -18,9 +18,7 @@ TEXT
   s.authors = ['Mat Brown', 'Peer Allan', 'Dmitriy Dzema', 'Benjamin Krause', 'Marcel de Graaf', 'Brandon Keepers', 'Peter Berkenbosch', 'Brian Atkinson', 'Tom Coleman', 'Matt Mitchell', 'Nathan Beyer', 'Kieran Topping', 'Nicolas Braem', 'Jeremy Ashkenas', 'Dylan Vaughn', 'Brian Durand', 'Nick Zadrozny']
   s.rubyforge_project = 'sunspot'
   s.files = Dir.glob('[A-Z]*') +
-            Dir.glob('{bin,installer,lib,spec,tasks,templates}/**/*') +
-            Dir.glob('solr/{etc,lib,webapps}/**/*') +
-            Dir.glob('solr/solr/{conf,lib}/*') << 'solr/start.jar'
+            Dir.glob('{bin,installer,lib,spec,tasks,templates}/**/*')
   s.add_runtime_dependency 'rsolr', '0.12.1'
   s.add_runtime_dependency 'escape', '0.0.4'
   s.add_runtime_dependency 'pr_geohash', '~> 1.0'
